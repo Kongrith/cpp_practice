@@ -98,7 +98,7 @@ void addInfoHandler(PhoneBook &phonebook)
     field_handler("firstname", info[0], 0);
     field_handler("lastname", info[1], 0);
     field_handler("nickname", info[2], 0);
-    field_handler("phone number", info[2], 1);
+    field_handler("phone number", info[3], 1);
     field_handler("your secret", info[4], 0);
     phonebook.add_contact(info);
 }
