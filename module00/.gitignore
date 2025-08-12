@@ -1,4 +1,9 @@
-dev
+.vscode
+.gitignore
+
+*.pdf
+
+sheet.py
 README.md
 
-.vscode
+/dev

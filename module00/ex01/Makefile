@@ -1,10 +1,10 @@
-NAME = main
+NAME = phonebook
 
 CXX = c++
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 LINK_CFLAGS = $(CFLAGS)
 
-SRCS = main.cpp
+SRCS = main.cpp Contact.cpp PhoneBook.cpp
 
 OBJS = ${SRCS:.cpp=.o}
 
