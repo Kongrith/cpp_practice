@@ -1,9 +1,0 @@
-.vscode
-.gitignore
-
-*.pdf
-
-sheet.py
-README.md
-
-/dev

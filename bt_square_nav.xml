@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="MainTree">
+    <BehaviorTree ID="MainTree">
+
+        <!-- Blackboard defaults -->
+        <SetBlackboard output_key="number_recoveries" value="0"/>
+        <SetBlackboard output_key="goal_checker" value="default"/>
+        <SetBlackboard output_key="controller" value="FollowPath"/>
+        <SetBlackboard output_key="planner" value="GridBased"/>
+
+        <!-- Selectors allow recovery on failure -->
+        <RecoveryNode number_of_retries="3" name="NavigateWithRecovery">
+
+            <!-- Retry a few times before invoking recovery -->
+            <RetryUntilSuccessful num_attempts="2">
+                <PipelineSequence name="NavigatePipeline">
+
+                    <!-- Keep costmaps fresh -->
+                    <KeepRunningUntilFailure>
+                        <RateController hz="10">
+                            <SequenceStar name="RefreshCostmaps">
+                                <ClearEntireCostmap service_name="local_costmap/clear_entirely_local_costmap"/>
+                                <ClearEntireCostmap service_name="global_costmap/clear_entirely_global_costmap"/>
+                            </SequenceStar>
+                        </RateController>
+                    </KeepRunningUntilFailure>
+
+                    <!-- Make sure transforms and costmaps are OK -->
+                    <RateController hz="2">
+                        <SequenceStar name="SystemChecks">
+                            <GoalUpdated/>
+                            <IsStuck/>
+                            <ReinitializeGlobalLocalization/>
+                            <WaitForTransform child_frame="base_link" parent_frame="map" timeout="2.0"/>
+                        </SequenceStar>
+                    </RateController>
+
+                    <!-- Select planner/controller/goal-checker from blackboard -->
+                    <ControllerSelector input_controller="controller"/>
+                    <PlannerSelector input_planner_id="planner"/>
+                    <GoalCheckerSelector input_goal_checker_id="goal_checker"/>
+
+                    <!-- PLAN through multiple waypoints (poses come from the action goal) -->
+                    <ComputePathThroughPoses server_name="ComputePathThroughPoses" start="use_start" goal="goal" path="path"/>
+
+                    <!-- FOLLOW the path with continuous replanning -->
+                    <RecoveryNode number_of_retries="1" name="FollowWithReplanning">
+                        <PipelineSequence name="FollowPipeline">
+
+                            <!-- Replan in parallel while following -->
+                            <RoundRobin>
+                                <RateController hz="0.5">
+                                    <ComputePathThroughPoses server_name="ComputePathThroughPoses" start="use_start" goal="goal" path="path"/>
+                                </RateController>
+
+                                <SequenceStar name="Follow">
+                                    <FollowPath server_name="FollowPath" path="path"/>
+                                </SequenceStar>
+                            </RoundRobin>
+                        </PipelineSequence>
+
+                        <!-- Local recovery if following fails -->
+                        <Sequence name="LocalRecovery">
+                            <ClearEntireCostmap service_name="local_costmap/clear_entirely_local_costmap"/>
+                            <Spin spin_dist="1.57"/>
+                            <Wait seconds="1.0"/>
+                        </Sequence>
+                    </RecoveryNode>
+                </PipelineSequence>
+            </RetryUntilSuccessful>
+
+            <!-- Global recovery if planning/following repeatedly fail -->
+            <Sequence name="GlobalRecovery">
+                <ClearEntireCostmap service_name="global_costmap/clear_entirely_global_costmap"/>
+                <BackUp backup_dist="0.25" backup_speed="0.05"/>
+                <Spin spin_dist="3.14"/>
+                <Wait seconds="1.0"/>
+            </Sequence>
+        </RecoveryNode>
+    </BehaviorTree>
+</root>
