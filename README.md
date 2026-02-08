@@ -1,5 +1,7 @@
 _This project has been created as part of the 42 curriculum by khkomasa_
 
+✅
+
 naming convention
 https://medium.com/@ryan_forrester_/c-naming-conventions-comprehensive-guide-6b813c17c23b
 
