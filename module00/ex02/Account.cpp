@@ -21,7 +21,7 @@ Account::Account(int initial_deposit)
     _displayTimestamp();
     std::cout << "index:" << _accountIndex
               << ";amount:" << initial_deposit
-              << ";create" << std::endl;
+              << ";created" << std::endl;
 }
 
 Account::~Account(void)
@@ -113,7 +113,7 @@ YYYYMMDD_HHMMSS
 */
 void Account::_displayTimestamp()
 {
-    std::time_t t = std::time(nullptr);
+    std::time_t t = std::time(NULL);
 
     // 2. Convert to local time
     std::tm *now = std::localtime(&t);

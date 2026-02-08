@@ -21,10 +21,10 @@ static int is_valid_number(std::string str)
 
 std::string GetUpperCase(std::string s)
 {
-    for (char &c : s)
+    for (std::string::size_type i = 0; i < s.size(); ++i)
     {
-        if (c >= 'a' && c <= 'z')
-            c = c - 32;
+        if (s[i] >= 'a' && s[i] <= 'z')
+            s[i] = s[i] - ('a' - 'A');
     }
     return (s);
 }
@@ -39,7 +39,7 @@ void searchInfoHandler(PhoneBook phonebook)
         std::getline(std::cin, str);
         if (is_valid_number(str))
         {
-            id = std::stoi(str);
+            id = std::atoi(str.c_str());
             if (1 <= id && id <= MAX_CONTACTS)
             {
                 int num_record = phonebook.get_num_record();
@@ -91,8 +91,6 @@ void field_handler(std::string msg, std::string &info, int activate)
 void addInfoHandler(PhoneBook &phonebook)
 {
     std::string info[5];
-    bool logic1 = true;
-    bool logic2 = true;
     std::cout << std::endl;
     std::cout << "Please enter your contact information:" << std::endl;
     field_handler("firstname", info[0], 0);

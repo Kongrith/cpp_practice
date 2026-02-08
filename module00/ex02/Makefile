@@ -1,21 +1,19 @@
-NAME = phonebook
+NAME = test
 
 CXX = c++
 CFLAGS = -Wall -Wextra -Werror -std=c++98
-LINK_CFLAGS = $(CFLAGS)
 
-SRCS = main.cpp Contact.cpp PhoneBook.cpp
-
+SRCS = Account.cpp tests.cpp 
 OBJS = ${SRCS:.cpp=.o}
 
 all: $(NAME)
 	@echo "built $(NAME) successfully"
 
 $(NAME): $(OBJS)
-	$(CXX) $(OBJS) $(LINK_CFLAGS) -o $(NAME)
+	$(CXX) $(OBJS) $(CFLAGS) -o $(NAME)
 
-%.o: %.c
-	$(CXX) $(CFLAGS) -o $@ -c $<
+%.o: %.cpp
+	$(CXX) $(CFLAGS) -c $< -o $@ 
 
 clean:
 	@rm -rf $(OBJS)

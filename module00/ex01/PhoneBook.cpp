@@ -1,4 +1,12 @@
 #include "PhoneBook.hpp"
+#include <sstream>
+
+static std::string int_to_string(int n)
+{
+    std::ostringstream oss;
+    oss << n;
+    return oss.str();
+}
 
 void PhoneBook::add_contact(std::string info[5])
 {
@@ -15,27 +23,11 @@ void PhoneBook::add_contact(std::string info[5])
 
 std::string print_format(std::string str)
 {
-    std::string formatted_str;
-
     if (str.length() > 10)
-    {
-        str[9] = '.';
-        formatted_str = str.substr(0, 10);
-    }
-    else
-    {
-        int start = 0;
-        for (int i = 0; i < 10 - str.length(); i++)
-        {
-            formatted_str += ' ';
-            start++;
-        }
-        for (int i = 0; i + start < 10; i++)
-        {
-            formatted_str += str[i];
-        }
-    }
-    return (formatted_str);
+        return str.substr(0, 9) + ".";
+
+    // left-pad with spaces to width 10
+    return std::string(10 - str.length(), ' ') + str;
 }
 
 void PhoneBook::show_contact(int id)
@@ -47,7 +39,7 @@ void PhoneBook::show_contact(int id)
     std::cout << "|----------|----------|----------|----------|" << std::endl;
     std::cout << "|   index  |first name| last name| nick name|" << std::endl;
     std::cout << "|----------|----------|----------|----------|" << std::endl;
-    std::cout << "|" << print_format(std::to_string(id)) << "|" << firstname << "|" << lastname << "|" << nickname << "|";
+    std::cout << "|" << print_format(int_to_string(id)) << "|" << firstname << "|" << lastname << "|" << nickname << "|";
     std::cout << std::endl;
     std::cout << std::endl;
 }
